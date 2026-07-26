@@ -14,7 +14,7 @@ source:
   sha256: c1c1827782509a2b38b52f833517f81a4826871126f8784a6a70e1a3e5cf7054
 
 build:
-  number: 0
+  number: 1
   # Both outputs depend on Linux-only runtimes (apptainer for the SIF
   # variant, docker-cli for the docker variant — neither has osx-* or
   # win-* conda-forge builds). __linux runtime constraint already prevents
