@@ -3,7 +3,7 @@ schema_version: 1
 
 context:
   name: pixitainer
-  version: "0.7.1"
+  version: "0.8.2"
 
 recipe:
   name: ${{ name }}
@@ -11,10 +11,10 @@ recipe:
 
 source:
   url: https://github.com/RaphaelRibes/pixitainer/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: c1c1827782509a2b38b52f833517f81a4826871126f8784a6a70e1a3e5cf7054
+  sha256: 5745b6eb3b34ae7f13687dbcc980377a7628968b1f7a931acb723b569894fde7
 
 build:
-  number: 1
+  number: 0
   # Both outputs depend on Linux-only runtimes (apptainer for the SIF
   # variant, docker-cli for the docker variant — neither has osx-* or
   # win-* conda-forge builds). __linux runtime constraint already prevents
@@ -32,6 +32,9 @@ outputs:
         - cp lib/common.sh $PREFIX/opt/pixitainer/common.sh
         - cp lib/sif.sh $PREFIX/opt/pixitainer/sif.sh
         - cp lib/bootstrap.sh $PREFIX/opt/pixitainer/bootstrap.sh
+        # 0.8.2 added lib/tool.sh; pixi-containerize sources it, so omitting
+        # it makes `pixi-containerize --help` fail at test time.
+        - cp lib/tool.sh $PREFIX/opt/pixitainer/tool.sh
         - cp pixi-containerize $PREFIX/bin/pixi-containerize
         - chmod +x $PREFIX/bin/pixi-containerize
     requirements:
@@ -45,6 +48,7 @@ outputs:
           - test -f ${PREFIX}/opt/pixitainer/common.sh
           - test -f ${PREFIX}/opt/pixitainer/sif.sh
           - test -f ${PREFIX}/opt/pixitainer/bootstrap.sh
+          - test -f ${PREFIX}/opt/pixitainer/tool.sh
           - pixi-containerize --help
     about:
       summary: Containerize Pixi workspaces into Apptainer/SIF images with a single command
@@ -55,6 +59,10 @@ outputs:
         be shipped as portable container images without writing a Dockerfile
         or Singularity definition file by hand.
 
+  # New in 0.8.2: upstream split the Singularity path out of the apptainer
+  # CLI into its own pixi-containerize-singularity entry point, backed by the
+  # `singularity` runtime instead of `apptainer`. TBD later
+
   - package:
       name: ${{ name }}-docker
     build:
@@ -64,6 +72,8 @@ outputs:
         - mkdir -p $PREFIX/opt/pixitainer
         - cp lib/common.sh $PREFIX/opt/pixitainer/common.sh
         - cp lib/bootstrap.sh $PREFIX/opt/pixitainer/bootstrap.sh
+        # 0.8.2: pixi-containerize-docker sources lib/tool.sh too.
+        - cp lib/tool.sh $PREFIX/opt/pixitainer/tool.sh
         - cp pixi-containerize-docker $PREFIX/bin/pixi-containerize-docker
         - chmod +x $PREFIX/bin/pixi-containerize-docker
     requirements:
@@ -76,6 +86,7 @@ outputs:
           - test -x ${PREFIX}/bin/pixi-containerize-docker
           - test -f ${PREFIX}/opt/pixitainer/common.sh
           - test -f ${PREFIX}/opt/pixitainer/bootstrap.sh
+          - test -f ${PREFIX}/opt/pixitainer/tool.sh
           - pixi-containerize-docker --help
     about:
       summary: Containerize Pixi workspaces into Docker images with a single command
@@ -101,4 +112,6 @@ about:
 
 extra:
   recipe-maintainers:
+    - RaphaelRibes
+    - ruben-arts
     - rxm7706
