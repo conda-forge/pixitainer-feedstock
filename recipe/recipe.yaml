@@ -3,7 +3,7 @@ schema_version: 1
 
 context:
   name: pixitainer
-  version: "0.8.2"
+  version: "0.8.3"
 
 recipe:
   name: ${{ name }}
@@ -11,7 +11,7 @@ recipe:
 
 source:
   url: https://github.com/RaphaelRibes/pixitainer/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 5745b6eb3b34ae7f13687dbcc980377a7628968b1f7a931acb723b569894fde7
+  sha256: f0a6878084728073926e40b319f7bd463618ccb9f27196463e042bab067c8b22
 
 build:
   number: 0
